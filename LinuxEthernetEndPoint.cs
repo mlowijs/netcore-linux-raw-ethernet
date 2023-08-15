@@ -2,6 +2,8 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
+namespace Sycade.Protocols.Common;
+
 /// <summary>
 /// Endpoint for sending raw Ethernet frames on Linux hosts.
 /// </summary>
@@ -24,6 +26,7 @@ public sealed class LinuxEthernetEndPoint : EndPoint
         var interfaceIndex = (int)type.GetProperty(LinuxNetworkInterfaceIndexPropertyName)!.GetValue(networkInterface)!;
         var interfaceIndexBytes = BitConverter.GetBytes(interfaceIndex);
         
+        // struct sockaddr_ll (man 7 packet)
         _socketAddress = new(AddressFamily, SocketAddressLinkLayerLength)
         {
             [4] = interfaceIndexBytes[0],
@@ -40,7 +43,7 @@ public sealed class LinuxEthernetEndPoint : EndPoint
         };
     }
     
-    public override AddressFamily AddressFamily => AddressFamily.Unspecified;
+    public override AddressFamily AddressFamily => AddressFamily.Packet;
     
     public override SocketAddress Serialize() => _socketAddress;
 }
