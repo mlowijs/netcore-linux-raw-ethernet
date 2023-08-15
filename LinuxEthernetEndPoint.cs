@@ -9,6 +9,7 @@ public sealed class LinuxEthernetEndPoint : EndPoint
 {
     private const int SocketAddressLinkLayerLength = 20;
     private const byte EthernetAddressLength = 6;
+    private const ushort ArpHardwareTypeEthernet = 1;
     private const string LinuxNetworkInterfaceTypeName = "LinuxNetworkInterface";
     private const string LinuxNetworkInterfaceIndexPropertyName = "Index";
     
@@ -23,6 +24,8 @@ public sealed class LinuxEthernetEndPoint : EndPoint
         
         var interfaceIndex = (int)type.GetProperty(LinuxNetworkInterfaceIndexPropertyName)!.GetValue(networkInterface)!;
         var interfaceIndexBytes = BitConverter.GetBytes(interfaceIndex);
+
+        var arpHardwareTypeBytes = BitConverter.GetBytes(ArpHardwareTypeEthernet);
         
         // struct sockaddr_ll (man 7 packet)
         _socketAddress = new(AddressFamily, SocketAddressLinkLayerLength)
@@ -31,6 +34,8 @@ public sealed class LinuxEthernetEndPoint : EndPoint
             [5] = interfaceIndexBytes[1],
             [6] = interfaceIndexBytes[2],
             [7] = interfaceIndexBytes[3],
+            [8] = arpHardwareTypeBytes[0],
+            [9] = arpHardwareTypeBytes[1],
             [11] = EthernetAddressLength,
             [12] = destinationMac[0],
             [13] = destinationMac[1],
