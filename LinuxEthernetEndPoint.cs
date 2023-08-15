@@ -2,8 +2,6 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
-namespace Sycade.Protocols.Common;
-
 /// <summary>
 /// Endpoint for sending raw Ethernet frames on Linux hosts.
 /// </summary>
